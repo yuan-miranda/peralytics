@@ -1,4 +1,22 @@
 {
+  "name": "peralytics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yuan-miranda/peralytics.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yuan-miranda/peralytics/issues"
+  },
+  "homepage": "https://github.com/yuan-miranda/peralytics#readme",
   "dependencies": {
     "@libsql/client": "^0.15.15"
   }

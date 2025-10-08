@@ -1,11 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pera Analytics</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+
+    <style>
+    </style>
 </head>
+
 <body>
-    <p>Pera Analytics</p>
+    <div class="mt-5" style="max-width: 900px; margin: auto; padding: 10px;">
+        <div class="table-responsive">
+            <div class="canvas-wrapper">
+                <canvas id="chart"></canvas>
+            </div>
+
+            <table class="table table-hover table-sm mt-2">
+                <caption>Rip to my wallet</caption>
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">VALUE</th>
+                        <th scope="col">DATE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-success">
+                        <th scope="row">1</th>
+                        <td>₱0.00</td>
+                        <td>October 8, 2025</td>
+                    </tr>
+                    <tr class="table-success">
+                        <th scope="row">2</th>
+                        <td>₱0.00</td>
+                        <td>October 8, 2025</td>
+                    </tr>
+                    <tr class="table-danger">
+                        <th scope="row">3</th>
+                        <td>₱0.00</td>
+                        <td>October 8, 2025</td>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row">Total</th>
+                        <td>₱0.00</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <script>
+        const currentDate = new Date();
+        const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+        const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+
+        const earnings = Array.from({ length: daysInMonth }, () => Math.floor(Math.random() * 1000));
+        const expenses = Array.from({ length: daysInMonth }, () => Math.floor(Math.random() * 1000));
+
+        new Chart(document.getElementById('chart'), {
+            type: 'line',
+            data: {
+                labels: days,
+                datasets: [
+                    {
+                        label: 'Daily Expenses',
+                        data: expenses,
+                        borderColor: 'red',
+                        backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                        pointBackgroundColor: 'red',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Daily Earnings',
+                        data: earnings,
+                        borderColor: 'green',
+                        backgroundColor: 'rgba(60, 179, 113, 0.2)',
+                        pointBackgroundColor: 'green',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        text: 'Earnings vs Expenses (October)',
+                        font: { size: 16 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount (₱)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Day of the Month (October)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
+
 </html>

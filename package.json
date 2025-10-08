@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/yuan-miranda/peralytics#readme",
   "dependencies": {
-    "@libsql/client": "^0.15.15"
+    "@libsql/client": "^0.15.15",
+    "lucide": "^0.545.0"
   }
 }

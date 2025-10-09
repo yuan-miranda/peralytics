@@ -9,23 +9,59 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .floating-btn {
+        .add-transaction-wrapper {
             position: fixed;
             bottom: 10px;
             left: 50%;
             transform: translateX(-50%);
             width: calc(100% - 20px);
-            max-width: 900px;
+            max-width: 50rem;
+        }
+
+        .add-transaction {
+            width: 100%;
+            padding: 10px   ;
+        }
+
+        .drawer-wrapper {
+            position: absolute;
+            right: 10px;
+            top: 0;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            background-color: white;
+            padding: 4px;
+        }
+
+        .drawer-toggle {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: black;
+            color: white;
+            border-radius: 50%;
         }
     </style>
 </head>
 
 <body>
-    <button class="floating-btn btn btn-dark">
-        <i data-lucide="plus" style="width:32px; height:32px;"></i>
-    </button>
+    <div class="add-transaction-wrapper">
+        <button class="add-transaction btn btn-dark d-flex align-items-center justify-content-center">
+            <i data-lucide="plus" style="margin-right: 8px;"></i>
+            Add Transaction
 
-    <div class="mt-5" style="max-width: 900px; margin: auto; padding: 10px;">
+        </button>
+        <!-- navigation drawer button -->
+        <div class="drawer-wrapper">
+            <div class="drawer-toggle">
+                <i data-lucide="chevron-up"></i>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="mt-5" style="max-width: 50rem; margin: auto; padding: 10px;">
         <div class="table-responsive">
             <div class="canvas-wrapper">
                 <canvas id="chart"></canvas>
@@ -88,7 +124,7 @@
                 labels: days,
                 datasets: [
                     {
-                        label: 'Daily Expenses',
+                        label: 'Expenses',
                         data: expenses,
                         borderColor: 'red',
                         backgroundColor: 'rgba(255, 0, 0, 0.2)',
@@ -97,7 +133,7 @@
                         fill: true
                     },
                     {
-                        label: 'Daily Earnings',
+                        label: 'Earnings',
                         data: earnings,
                         borderColor: 'green',
                         backgroundColor: 'rgba(60, 179, 113, 0.2)',
@@ -111,12 +147,10 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: {
-                        display: true,
-                        position: 'top',
-                        text: 'Earnings vs Expenses (October)',
-                        font: { size: 16 }
-                    }
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    },
                 },
                 scales: {
                     y: {

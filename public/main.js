@@ -162,11 +162,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             return alert('Password is required to confirm the transaction.');
         }
 
-        const amount = amountInput.value;
+        const amount = parseFloat(amountInput.value);
         const description = descriptionInput.value;
         const date = dateInput.value;
 
-        if (!amount || isNaN(amount) || amount.trim() === '') {
+        if (!amount || isNaN(amount)) {
             return alert('Transaction amount is required and must be a number.');
         }
 

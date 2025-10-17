@@ -147,6 +147,7 @@ async function saveTransaction(amount, description, date, inputPassword) {
             console.error(data.error)
             return false;
         }
+        return true;
     } catch (error) {
         console.error('Error saving transaction:', error);
         return false;

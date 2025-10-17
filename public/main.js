@@ -114,7 +114,6 @@ async function loadTransactions() {
     try {
         const response = await fetch('/api/load');
         const data = await response.json();
-        if (!data.success) return;
 
         tableBody.innerHTML = '';
         createChart();
@@ -136,13 +135,16 @@ async function saveTransaction(amount, description, date, inputPassword) {
             },
             body: JSON.stringify({ amount, description, date, inputPassword })
         });
+        const data = await response.json();
 
         if (response.status === 403) {
-            return alert('The password that you\'ve entered is incorrect. Please try again.');
+            alert('The password that you\'ve entered is incorrect. Please try again.');
+            return false;
         }
-
-        const data = await response.json();
-        return data.success;
+        if (!response.ok) {
+            console.error(data.error)
+            return false;
+        }
     } catch (error) {
         console.error('Error saving transaction:', error);
         return false;
@@ -171,10 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const success = await saveTransaction(amount, description, date, inputPassword);
-        if (!success) {
-            localStorage.removeItem('transactionPassword');
-            return alert('Failed to save transaction. Please try again.');
-        }
+        if (!success) return localStorage.removeItem('transactionPassword');
         localStorage.setItem('transactionPassword', inputPassword);
 
         await loadTransactions();

@@ -19,6 +19,7 @@
   "homepage": "https://github.com/yuan-miranda/peralytics#readme",
   "dependencies": {
     "@libsql/client": "^0.15.15",
+    "@vercel/node": "^5.4.0",
     "lucide": "^0.545.0"
   }
 }

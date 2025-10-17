@@ -1,0 +1,14 @@
+.add-transaction-wrapper {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 20px);
+    max-width: 50rem;
+}
+
+.add-transaction {
+    width: 100%;
+    padding: 1rem;
+
+}

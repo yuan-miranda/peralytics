@@ -24,26 +24,6 @@
             padding: 1rem;
 
         }
-
-        .drawer-wrapper {
-            position: absolute;
-            right: 10px;
-            top: 0;
-            transform: translateY(-50%);
-            border-radius: 50%;
-            background-color: white;
-            padding: 4px;
-        }
-
-        .drawer-toggle {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            border-radius: 50%;
-            padding: 0;
-        }
     </style>
 </head>
 
@@ -54,62 +34,7 @@
             aria-controls="offcanvasBottomAddTransaction">
             <i data-lucide="plus" style="margin-right: 8px;"></i>
             Add Transaction
-
         </button>
-        <!-- navigation drawer button -->
-        <div class="drawer-wrapper" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottomChangeMonth"
-            aria-controls="offcanvasBottomChangeMonth">
-            <button class="drawer-toggle btn btn-dark d-flex align-items-center justify-content-center">
-                <i data-lucide="chevron-up" style="width: 2rem; height: 2rem;"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- offcanvas bottom change month -->
-    <div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottomChangeMonth"
-        aria-labelledby="offcanvasBottomChangeMonthLabel">
-
-        <div class="offcanvas-header justify-content-center">
-            <div class="offcanvas-inner-header w-100">
-                <div class="d-flex justify-content-between align-items-center" style="max-width: 50rem; margin: auto;">
-                    <h5 class="offcanvas-title" id="offcanvasBottomChangeMonthLabel">Change Date</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                </div>
-            </div>
-        </div>
-
-        <div class="offcanvas-body small d-flex justify-content-center">
-            <div class="w-100" style="max-width: 50rem;">
-                <!-- month dropdown -->
-                <select class="form-select mb-3" id="monthDropdown">
-                    <option value="0">January</option>
-                    <option value="1">February</option>
-                    <option value="2">March</option>
-                    <option value="3">April</option>
-                    <option value="4">May</option>
-                    <option value="5">June</option>
-                    <option value="6">July</option>
-                    <option value="7">August</option>
-                    <option value="8">September</option>
-                    <option value="9">October</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
-                </select>
-
-                <!-- year dropdown -->
-                <select class="form-select" id="yearDropdown">
-                    <option value="2025" selected>2025</option>
-                </select>
-
-                <!-- checkbox of log all transactions -->
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="checkbox" value="" id="logAllTransactions">
-                    <label class="form-check-label" for="logAllTransactions">
-                        Log all transactions
-                    </label>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- offcanvas bottom add transaction -->
@@ -136,7 +61,7 @@
 
                     <!-- description -->
                     <div class="mb-3">
-                        <label for="transactionDescription" class="form-label">Description</label>
+                        <label for="transactionDescription" class="form-label">Description (optional)</label>
                         <input type="text" class="form-control" id="transactionDescription"
                             placeholder="Transaction Description">
                     </div>
@@ -149,7 +74,7 @@
 
                     <!-- submit button -->
                     <div class="d-grid" style="padding-bottom: 20px;">
-                        <button type="submit" class="btn btn-dark">Add Transaction</button>
+                        <button type="submit" class="btn btn-dark" id="addTransactionBtn">Add Transaction</button>
                     </div>
                 </form>
             </div>
@@ -168,7 +93,7 @@
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">VALUE</th>
+                        <th scope="col">VALUE (₱)</th>
                         <th scope="col">DESC</th>
                         <th scope="col">DATE</th>
                     </tr>
@@ -177,10 +102,10 @@
                 <tbody>
                 </tbody>
 
-                <tfoot>
+                <tfoot class="table-dark">
                     <tr>
                         <th scope="row">Total</th>
-                        <td id="totalValue">₱0.00</td>
+                        <td id="totalValue">₱ 0.00</td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -192,105 +117,76 @@
     <script>
         lucide.createIcons();
 
-        const monthDropdown = document.getElementById('monthDropdown');
-        const yearDropdown = document.getElementById('yearDropdown');
-        const logAllTransactionsCheckbox = document.getElementById('logAllTransactions');
-
+        offcanvasBottomAddTransaction = document.getElementById('offcanvasBottomAddTransaction');
         const tableBody = document.querySelector('#transactionTable tbody');
         const totalValueCell = document.getElementById('totalValue');
+
+        const addTransactionBtn = document.getElementById('addTransactionBtn');
+        const valueInput = document.getElementById('transactionValue');
+        const descriptionInput = document.getElementById('transactionDescription');
+        const dateInput = document.getElementById('transactionDate');
+
+        // initialize date today
+        const today = new Date().toISOString().split('T')[0];
+        valueInput.value = 0.00;
+        descriptionInput.value = '';
+        dateInput.value = today;
 
         const ctx = document.getElementById('chart').getContext('2d');
         let chart;
 
-        const monthNames = [
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ];
-
-        function generateData(month, year) {
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-            const earnings = Array.from({ length: daysInMonth }, () => Math.floor(Math.random() * 1000));
-            const expenses = Array.from({ length: daysInMonth }, () => Math.floor(Math.random() * 1000));
-            return { days, earnings, expenses };
+        function generateRandomData(length, min, max) {
+            const data = [];
+            for (let i = 0; i < length; i++) {
+                data.push((Math.random() * (max - min) + min).toFixed(2));
+            }
+            return data;
         }
 
-        function updateChart(month, year) {
-            const { days, earnings, expenses } = generateData(month, year);
-            if (chart) chart.destroy();
+        function addTransaction(id, value, description, date) {
+            const type = parseFloat(value) < 0 ? 'danger' : 'success';
+            const row = `
+                <tr class="table-${type}">
+                    <td>${id}</td>
+                    <td>${parseFloat(value).toFixed(2)}</td>
+                    <td>${description}</td>
+                    <td>${date}</td>
+                </tr>
+            `;
+            tableBody.insertAdjacentHTML('beforeend', row);
+            updateTotal();
 
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: days,
-                    datasets: [
-                        {
-                            label: 'Expenses',
-                            data: expenses,
-                            borderColor: 'red',
-                            backgroundColor: 'rgba(255, 0, 0, 0.2)',
-                            pointBackgroundColor: 'red',
-                            tension: 0.3,
-                            fill: true
-                        },
-                        {
-                            label: 'Earnings',
-                            data: earnings,
-                            borderColor: 'green',
-                            backgroundColor: 'rgba(60, 179, 113, 0.2)',
-                            pointBackgroundColor: 'green',
-                            tension: 0.3,
-                            fill: true
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        tooltip: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Amount (₱)'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: `Day of the Month (${monthNames[month]} ${year})`
-                            }
-                        }
-                    }
-                }
-            });
+            const val = parseFloat(value);
+            const expense = val < 0 ? val : 0;
+            const earning = val >= 0 ? val : 0;
+
+            chart.data.labels.push(id);
+            chart.data.datasets[0].data.push(expense);
+            chart.data.datasets[1].data.push(earning);
+            chart.update();
         }
 
-        function updateChartAll(year) {
-            if (chart) chart.destroy();
-            const months = monthNames;
-            const earnings = months.map(() => Math.floor(Math.random() * 30000));
-            const expenses = months.map(() => Math.floor(Math.random() * 30000));
-
+        function createChart() {
             chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: months,
+                    labels: [],
                     datasets: [
                         {
                             label: 'Expenses',
-                            data: expenses,
-                            backgroundColor: 'rgba(255, 0, 0, 0.6)',
+                            data: [],
+                            borderColor: 'red',
+                            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                            pointBackgroundColor: 'red',
+                            borderWidth: 1
                         },
                         {
                             label: 'Earnings',
-                            data: earnings,
-                            backgroundColor: 'rgba(60, 179, 113, 0.6)',
+                            data: [],
+                            borderColor: 'green',
+                            backgroundColor: 'rgba(60, 179, 113, 0.2)',
+                            pointBackgroundColor: 'green',
+                            borderWidth: 1
                         }
                     ]
                 },
@@ -298,7 +194,6 @@
                     responsive: true,
                     plugins: {
                         tooltip: {
-                            mode: 'index',
                             intersect: false,
                         },
                     },
@@ -313,7 +208,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: `Monthly Summary (${year})`
+                                text: `Transaction #`
                             }
                         }
                     }
@@ -321,84 +216,40 @@
             });
         }
 
-        function updateTable(month, year) {
-            tableBody.innerHTML = '';
+        function updateTotal() {
             let total = 0;
-
-            for (let i = 1; i <= 10; i++) {
-                const value = (Math.random() * 1000).toFixed(2);
-                const type = Math.random() > 0.5 ? 'success' : 'danger';
-                const date = `${monthNames[month]} ${Math.floor(Math.random() * 28) + 1}, ${year}`;
-                total += parseFloat(value);
-
-                const row = `
-                    <tr class="table-${type}">
-                        <th scope="row">${i}</th>
-                        <td>₱${value}</td>
-                        <td>Sample Transaction ${i}</td>
-                        <td>${date}</td>
-                    </tr>
-                `;
-                tableBody.insertAdjacentHTML('beforeend', row);
-            }
-            totalValueCell.textContent = `₱${total.toFixed(2)}`;
-        }
-
-        function updateTableAll(year) {
-            tableBody.innerHTML = '';
-            let total = 0;
-            let count = 1;
-
-            monthNames.forEach((month, monthIndex) => {
-                for (let i = 1; i <= 5; i++) {
-                    const value = (Math.random() * 1000).toFixed(2);
-                    const type = Math.random() > 0.5 ? 'success' : 'danger';
-                    const date = `${month} ${Math.floor(Math.random() * 28) + 1}, ${year}`;
-                    total += parseFloat(value);
-
-                    const row = `
-                        <tr class="table-${type}">
-                            <th scope="row">${count++}</th>
-                            <td>₱${value}</td>
-                            <td>Sample Transaction ${i}</td>
-                            <td>${date}</td>
-                        </tr>
-                    `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
-                }
+            tableBody.querySelectorAll('tr').forEach(row => {
+                const valueCell = row.cells[1];
+                const value = parseFloat(valueCell.textContent);
+                total += value;
             });
-            totalValueCell.textContent = `₱${total.toFixed(2)}`;
+            totalValueCell.textContent = `₱ ${total.toFixed(2)}`;
         }
-
-        function updateAnalytics() {
-            const month = parseInt(monthDropdown.value);
-            const year = parseInt(yearDropdown.value);
-            updateChart(month, year);
-            updateTable(month, year);
-        }
-
-        logAllTransactionsCheckbox.addEventListener('change', () => {
-            const isChecked = logAllTransactionsCheckbox.checked;
-            monthDropdown.disabled = isChecked;
-            yearDropdown.disabled = isChecked;
-            if (isChecked) {
-                const year = parseInt(yearDropdown.value);
-                updateChartAll(year);
-                updateTableAll(year);
-            } else {
-                updateAnalytics();
-            }
-        });
 
         document.addEventListener('DOMContentLoaded', () => {
-            const currentDate = new Date();
-            monthDropdown.value = currentDate.getMonth();
-            yearDropdown.value = currentDate.getFullYear();
-            logAllTransactionsCheckbox.checked = false;
+            createChart();
 
-            monthDropdown.addEventListener('change', updateAnalytics);
-            yearDropdown.addEventListener('change', updateAnalytics);
-            updateAnalytics();
+            addTransactionBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+
+                const value = valueInput.value;
+                const description = descriptionInput.value;
+                const date = dateInput.value;
+
+                if (!value || isNaN(value) || value.trim() === '') {
+                    return alert('Transaction value is required and must be a number.');
+                }
+
+                const id = tableBody.children.length + 1;
+                addTransaction(id, value, description, date);
+
+                valueInput.value = 0.00;
+                descriptionInput.value = '';
+                dateInput.value = today;
+
+                const offcanvas = bootstrap.Offcanvas.getInstance(offcanvasBottomAddTransaction);
+                offcanvas.hide();
+            });
         });
     </script>
 </body>

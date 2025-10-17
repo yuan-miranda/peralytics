@@ -7,7 +7,7 @@ const client = createClient({
     authToken: process.env.TURSO_AUTH_TOKEN!
 });
 
-const password = process.env.password;
+const password = process.env.PASSWORD;
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') {

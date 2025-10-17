@@ -127,14 +127,14 @@ async function loadTransactions() {
     }
 }
 
-async function saveTransaction(amount, description, date, password) {
+async function saveTransaction(amount, description, date, inputPassword) {
     try {
         const response = await fetch('/api/save', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ amount, description, date, password })
+            body: JSON.stringify({ amount, description, date, inputPassword })
         });
 
         if (response.status === 403) {
@@ -157,8 +157,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
 
         // prompt for password
-        let password = localStorage.getItem('transactionPassword') || prompt("Enter password to confirm:");
-        if (!password) {
+        let inputPassword = localStorage.getItem('transactionPassword') || prompt("Enter password to confirm:");
+        if (!inputPassword) {
             return alert('Password is required to confirm the transaction.');
         }
 
@@ -170,12 +170,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             return alert('Transaction amount is required and must be a number.');
         }
 
-        const success = await saveTransaction(amount, description, date, password);
+        const success = await saveTransaction(amount, description, date, inputPassword);
         if (!success) {
             localStorage.removeItem('transactionPassword');
             return alert('Failed to save transaction. Please try again.');
         }
-        localStorage.setItem('transactionPassword', password);
+        localStorage.setItem('transactionPassword', inputPassword);
 
         await loadTransactions();
 

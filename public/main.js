@@ -51,6 +51,8 @@ function addTransaction(id, amount, description, date) {
 }
 
 function createChart() {
+    if (chart) chart.destroy();
+
     chart = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -152,7 +154,6 @@ async function saveTransaction(amount, description, date, inputPassword) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    createChart();
     await loadTransactions();
 
     addTransactionBtn.addEventListener('click', async (e) => {

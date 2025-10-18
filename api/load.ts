@@ -16,6 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const result = await client.execute({
             sql: `
             SELECT * FROM transactions
+            ORDER BY created_at DESC
             `
         });
 

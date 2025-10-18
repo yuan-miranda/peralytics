@@ -44,7 +44,7 @@ function addTransaction(id, amount, description, date) {
     const expense = val < 0 ? val : 0;
     const earning = val >= 0 ? val : 0;
 
-    chart.data.labels.push(id);
+    chart.data.labels.push(date);
     chart.data.datasets[0].data.push(expense);
     chart.data.datasets[1].data.push(earning);
     chart.update();

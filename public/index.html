@@ -68,6 +68,18 @@
 
 
     <div class="mt-5 mb-5" style="max-width: 50rem; margin: auto; padding: 10px;">
+        <div>
+            <div class="d-flex align-items-center">
+                <select class="form-select w-auto" id="groupBySelect" aria-label="Group By Select">
+                    <option value="" selected>Default</option>
+                    <option value="day">Daily</option>
+                    <option value="week">Weekly</option>
+                    <option value="month">Monthly</option>
+                    <option value="year">Yearly</option>
+                </select>
+            </div>
+        </div>
+
         <div class="table-responsive">
             <div class="canvas-wrapper">
                 <canvas id="chart"></canvas>

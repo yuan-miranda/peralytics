@@ -4,6 +4,7 @@ lucide.createIcons();
 offcanvasBottomAddTransaction = document.getElementById('offcanvasBottomAddTransaction');
 const tableBody = document.querySelector('#transactionTable tbody');
 const totalAmountCell = document.getElementById('totalAmount');
+const groupBySelect = document.getElementById('groupBySelect');
 
 const addTransactionBtn = document.getElementById('addTransactionBtn');
 const amountInput = document.getElementById('transactionAmount');
@@ -20,42 +21,6 @@ const ctx = document.getElementById('chart').getContext('2d');
 let chart;
 let cumulativeAmount = 0;
 
-function generateRandomData(length, min, max) {
-    const data = [];
-    for (let i = 0; i < length; i++) {
-        data.push((Math.random() * (max - min) + min).toFixed(2));
-    }
-    return data;
-}
-
-function addTransactionTableRow(index, id, amount, description, date) {
-    const type = parseFloat(amount) < 0 ? 'danger' : 'success';
-    const row = `
-        <tr class="table-${type}" data-id="${id}">
-            <td>${index}</td>
-            <td>${parseFloat(amount).toFixed(2)}</td>
-            <td>${description}</td>
-            <td>${date}</td>
-        </tr>
-    `;
-    tableBody.insertAdjacentHTML('beforeend', row);
-    updateTotal();
-}
-
-function addTransactionChartData(date, amount) {
-    const val = parseFloat(amount);
-    const start = cumulativeAmount;
-    cumulativeAmount += val;
-    const end = cumulativeAmount;
-
-    chart.data.labels.push(date);
-    chart.data.datasets[0].data.push([start, end]);
-    chart.data.datasets[0].backgroundColor.push(
-        val >= 0 ? 'rgba(60, 179, 113, 1)' : 'rgba(255, 0, 0, 1)'
-    );
-    chart.update();
-}
-
 function createChart() {
     if (chart) chart.destroy();
 
@@ -65,7 +30,7 @@ function createChart() {
             labels: [],
             datasets: [
                 {
-                    label: 'Balance History',
+                    label: 'Balance',
                     data: [],
                     backgroundColor: [],
                 }
@@ -77,7 +42,7 @@ function createChart() {
                 tooltip: {
                     intersect: false,
                     callbacks: {
-                        label: function(context) {
+                        label: function (context) {
                             const [start, end] = context.raw;
                             const amount = end - start;
                             return `₱ ${amount.toFixed(2)} (₱${start.toFixed(2)} > ₱${end.toFixed(2)})`;
@@ -114,6 +79,34 @@ function updateTotal() {
     totalAmountCell.textContent = `₱ ${total.toFixed(2)}`;
 }
 
+function addTransactionTableRow(index, id, amount, description, date) {
+    const type = parseFloat(amount) < 0 ? 'danger' : 'success';
+    const row = `
+        <tr class="table-${type}" data-id="${id}">
+            <td>${index}</td>
+            <td>${parseFloat(amount).toFixed(2)}</td>
+            <td>${description}</td>
+            <td>${date}</td>
+        </tr>
+    `;
+    tableBody.insertAdjacentHTML('beforeend', row);
+    updateTotal();
+}
+
+function addTransactionChartData(date, amount) {
+    const val = parseFloat(amount);
+    const start = cumulativeAmount;
+    cumulativeAmount += val;
+    const end = cumulativeAmount;
+
+    chart.data.labels.push(date);
+    chart.data.datasets[0].data.push([start, end]);
+    chart.data.datasets[0].backgroundColor.push(
+        val >= 0 ? 'rgba(60, 179, 113, 1)' : 'rgba(255, 0, 0, 1)'
+    );
+    chart.update();
+}
+
 async function loadTransactions() {
     try {
         const response = await fetch('/api/load');
@@ -129,11 +122,11 @@ async function loadTransactions() {
             addTransactionTableRow(reverseIndex, transaction.id, transaction.amount, transaction.description, transaction.date);
         });
 
-        // ascending for chart
-        data.transactions.slice().reverse().forEach((transaction) => {
+        // group transactions and ascending order in chart
+        const grouped = groupTransactions(data.transactions, groupBySelect.value);
+        grouped.forEach((transaction) => {
             addTransactionChartData(transaction.date, transaction.amount);
         });
-
     } catch (error) {
         console.error('Error loading transactions:', error);
     }
@@ -165,8 +158,75 @@ async function saveTransaction(amount, description, date, inputPassword) {
     }
 }
 
+function groupTransactions(transactions, mode) {
+    if (!mode) return transactions.slice().reverse();
+    const groups = {};
+
+    transactions.forEach(transaction => {
+        const date = new Date(transaction.date);
+        let key;
+        let rangeStart;
+        let rangeEnd;
+
+        switch (mode) {
+            case 'day':
+                key = date.toISOString().split('T')[0];
+                rangeStart = key;
+                rangeEnd = key;
+                break;
+            case 'week':
+                const weekStart = new Date(date);
+                const day = (date.getDay() + 6) % 7;
+                weekStart.setDate(date.getDate() - day);
+
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6);
+
+                key = weekStart.toISOString().split('T')[0];
+                rangeStart = weekStart.toISOString().split('T')[0];
+                rangeEnd = weekEnd.toISOString().split('T')[0];
+                break;
+            case 'month':
+                const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
+                const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+                key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                rangeStart = monthStart.toISOString().split('T')[0];
+                rangeEnd = monthEnd.toISOString().split('T')[0];
+                break;
+            case 'year':
+                const yearStart = new Date(date.getFullYear(), 0, 1);
+                const yearEnd = new Date(date.getFullYear(), 11, 31);
+
+                key = `${date.getFullYear()}`;
+                rangeStart = yearStart.toISOString().split('T')[0];
+                rangeEnd = yearEnd.toISOString().split('T')[0];
+                break;
+            default:
+                throw new Error('Invalid grouping mode');
+        }
+
+        if (!groups[key]) {
+            groups[key] = { amount: 0, rangeStart, rangeEnd };
+        }
+
+        groups[key].amount += parseFloat(transaction.amount);
+    });
+    return Object.entries(groups)
+        .map(([date, data]) => ({
+            date,
+            amount: data.amount,
+            range: { start: data.rangeStart, end: data.rangeEnd }
+        }))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     await loadTransactions();
+
+    groupBySelect.addEventListener('change', async () => {
+        await loadTransactions();
+    });
 
     addTransactionBtn.addEventListener('click', async (e) => {
         e.preventDefault();

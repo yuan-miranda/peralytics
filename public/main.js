@@ -27,7 +27,7 @@ function generateRandomData(length, min, max) {
     return data;
 }
 
-function addTransaction(index, id, amount, description, date) {
+function addTransactionTableRow(index, id, amount, description, date) {
     const type = parseFloat(amount) < 0 ? 'danger' : 'success';
     const row = `
                 <tr class="table-${type}" data-id="${id}">
@@ -39,7 +39,9 @@ function addTransaction(index, id, amount, description, date) {
             `;
     tableBody.insertAdjacentHTML('beforeend', row);
     updateTotal();
+}
 
+function addTransactionChartData(date, amount) {
     const val = parseFloat(amount);
     const expense = val < 0 ? val : 0;
     const earning = val >= 0 ? val : 0;
@@ -62,17 +64,15 @@ function createChart() {
                     label: 'Expenses',
                     data: [],
                     borderColor: 'red',
-                    backgroundColor: 'rgba(255, 0, 0, 0.2)',
-                    pointBackgroundColor: 'red',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(255, 0, 0, 1)',
+                    pointBackgroundColor: 'red'
                 },
                 {
                     label: 'Earnings',
                     data: [],
                     borderColor: 'green',
-                    backgroundColor: 'rgba(60, 179, 113, 0.2)',
-                    pointBackgroundColor: 'green',
-                    borderWidth: 1
+                    backgroundColor: 'rgba(60, 179, 113, 1)',
+                    pointBackgroundColor: 'green'
                 }
             ]
         },
@@ -123,8 +123,14 @@ async function loadTransactions() {
         const totalTransactions = data.transactions.length;
         data.transactions.forEach((transaction, index) => {
             const reverseIndex = totalTransactions - index;
-            addTransaction(reverseIndex, transaction.id, transaction.amount, transaction.description, transaction.date);
+            addTransactionTableRow(reverseIndex, transaction.id, transaction.amount, transaction.description, transaction.date);
         });
+
+        // ascending for chart
+        data.transactions.slice().reverse().forEach((transaction) => {
+            addTransactionChartData(transaction.date, transaction.amount);
+        });
+
     } catch (error) {
         console.error('Error loading transactions:', error);
     }

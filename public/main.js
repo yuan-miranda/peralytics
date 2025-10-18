@@ -27,11 +27,11 @@ function generateRandomData(length, min, max) {
     return data;
 }
 
-function addTransaction(id, amount, description, date) {
+function addTransaction(index, id, amount, description, date) {
     const type = parseFloat(amount) < 0 ? 'danger' : 'success';
     const row = `
-                <tr class="table-${type}">
-                    <td>${id}</td>
+                <tr class="table-${type}" data-id="${id}">
+                    <td>${index}</td>
                     <td>${parseFloat(amount).toFixed(2)}</td>
                     <td>${description}</td>
                     <td>${date}</td>
@@ -120,8 +120,10 @@ async function loadTransactions() {
         tableBody.innerHTML = '';
         createChart();
 
-        data.transactions.forEach(transaction => {
-            addTransaction(transaction.id, transaction.amount, transaction.description, transaction.date);
+        const totalTransactions = data.transactions.length;
+        data.transactions.forEach((transaction, index) => {
+            const reverseIndex = totalTransactions - index;
+            addTransaction(reverseIndex, transaction.id, transaction.amount, transaction.description, transaction.date);
         });
     } catch (error) {
         console.error('Error loading transactions:', error);

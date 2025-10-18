@@ -18,6 +18,7 @@ dateInput.value = today;
 
 const ctx = document.getElementById('chart').getContext('2d');
 let chart;
+let cumulativeAmount = 0;
 
 function generateRandomData(length, min, max) {
     const data = [];
@@ -30,25 +31,28 @@ function generateRandomData(length, min, max) {
 function addTransactionTableRow(index, id, amount, description, date) {
     const type = parseFloat(amount) < 0 ? 'danger' : 'success';
     const row = `
-                <tr class="table-${type}" data-id="${id}">
-                    <td>${index}</td>
-                    <td>${parseFloat(amount).toFixed(2)}</td>
-                    <td>${description}</td>
-                    <td>${date}</td>
-                </tr>
-            `;
+        <tr class="table-${type}" data-id="${id}">
+            <td>${index}</td>
+            <td>${parseFloat(amount).toFixed(2)}</td>
+            <td>${description}</td>
+            <td>${date}</td>
+        </tr>
+    `;
     tableBody.insertAdjacentHTML('beforeend', row);
     updateTotal();
 }
 
 function addTransactionChartData(date, amount) {
     const val = parseFloat(amount);
-    const expense = val < 0 ? val : 0;
-    const earning = val >= 0 ? val : 0;
+    const start = cumulativeAmount;
+    cumulativeAmount += val;
+    const end = cumulativeAmount;
 
     chart.data.labels.push(date);
-    chart.data.datasets[0].data.push(expense);
-    chart.data.datasets[1].data.push(earning);
+    chart.data.datasets[0].data.push([start, end]);
+    chart.data.datasets[0].backgroundColor.push(
+        val >= 0 ? 'rgba(60, 179, 113, 1)' : 'rgba(255, 0, 0, 1)'
+    );
     chart.update();
 }
 
@@ -61,18 +65,9 @@ function createChart() {
             labels: [],
             datasets: [
                 {
-                    label: 'Expenses',
+                    label: 'Balance History',
                     data: [],
-                    borderColor: 'red',
-                    backgroundColor: 'rgba(255, 0, 0, 1)',
-                    pointBackgroundColor: 'red'
-                },
-                {
-                    label: 'Earnings',
-                    data: [],
-                    borderColor: 'green',
-                    backgroundColor: 'rgba(60, 179, 113, 1)',
-                    pointBackgroundColor: 'green'
+                    backgroundColor: [],
                 }
             ]
         },
@@ -81,6 +76,13 @@ function createChart() {
             plugins: {
                 tooltip: {
                     intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            const [start, end] = context.raw;
+                            const amount = end - start;
+                            return `₱ ${amount.toFixed(2)} (₱${start.toFixed(2)} > ₱${end.toFixed(2)})`;
+                        }
+                    }
                 },
             },
             scales: {
@@ -94,7 +96,7 @@ function createChart() {
                 x: {
                     title: {
                         display: true,
-                        text: `Transaction #`
+                        text: 'Transaction Date'
                     }
                 }
             }
@@ -118,6 +120,7 @@ async function loadTransactions() {
         const data = await response.json();
 
         tableBody.innerHTML = '';
+        cumulativeAmount = 0;
         createChart();
 
         const totalTransactions = data.transactions.length;
@@ -178,7 +181,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const description = descriptionInput.value;
         const date = dateInput.value;
 
-        if (!amount || isNaN(amount)) {
+        if (isNaN(amount)) {
             return alert('Transaction amount is required and must be a number.');
         }
 

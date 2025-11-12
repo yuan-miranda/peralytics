@@ -76,7 +76,7 @@ function updateTotal() {
         const value = parseFloat(amountCell.textContent);
         total += value;
     });
-    totalAmountCell.textContent = `₱ ${total.toFixed(2)}`;
+    totalAmountCell.textContent = `${total.toFixed(2)}`;
 }
 
 function addTransactionTableRow(index, id, amount, description, date) {
@@ -86,7 +86,7 @@ function addTransactionTableRow(index, id, amount, description, date) {
             <td>${index}</td>
             <td>${parseFloat(amount).toFixed(2)}</td>
             <td>${description}</td>
-            <td>${date}</td>
+            <td class="text-center">${date}</td>
         </tr>
     `;
     tableFoot.insertAdjacentHTML('beforeend', row);

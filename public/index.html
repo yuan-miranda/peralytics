@@ -80,26 +80,26 @@
             </div>
         </div>
 
-        <div class="table-responsive">
-            <div class="canvas-wrapper">
-                <canvas id="chart"></canvas>
-            </div>
+        <div class="canvas-wrapper">
+            <canvas id="chart"></canvas>
+        </div>
 
-            <table class="table table-hover table-sm small mt-2" id="transactionTable">
+        <div class="table-responsive">
+            <table class="table table-hover table-sm small mt-2" id="transactionTable" style="white-space: nowrap;">
                 <caption>Rip to my wallet</caption>
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">AMOUNT (₱)</th>
                         <th scope="col">DESCRIPTION</th>
-                        <th scope="col">DATE</th>
+                        <th scope="col" class="text-center">DATE</th>
                     </tr>
                 </thead>
 
                 <tbody class="table-secondary">
                     <tr>
                         <th scope="row">Total</th>
-                        <td id="totalAmount">₱ 0.00</td>
+                        <td id="totalAmount">0.00</td>
                         <td></td>
                         <td></td>
                     </tr>

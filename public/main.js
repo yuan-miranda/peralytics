@@ -2,7 +2,7 @@
 lucide.createIcons();
 
 offcanvasBottomAddTransaction = document.getElementById('offcanvasBottomAddTransaction');
-const tableFoot = document.querySelector('#transactionTable tfoot');
+const tableBody = document.querySelector('#transactionTable tbody');
 const totalAmountCell = document.getElementById('totalAmount');
 const groupBySelect = document.getElementById('groupBySelect');
 
@@ -71,12 +71,12 @@ function createChart() {
 
 function updateTotal() {
     let total = 0;
-    tableFoot.querySelectorAll('tr').forEach(row => {
+    tableBody.querySelectorAll('tr').forEach(row => {
         const amountCell = row.cells[1];
         const value = parseFloat(amountCell.textContent);
         total += value;
     });
-    totalAmountCell.textContent = `${total.toFixed(2)}`;
+    totalAmountCell.textContent = `₱ ${total.toFixed(2)}`;
 }
 
 function addTransactionTableRow(index, id, amount, description, date) {
@@ -89,7 +89,7 @@ function addTransactionTableRow(index, id, amount, description, date) {
             <td class="text-center">${date}</td>
         </tr>
     `;
-    tableFoot.insertAdjacentHTML('beforeend', row);
+    tableBody.insertAdjacentHTML('beforeend', row);
     updateTotal();
 }
 
@@ -112,7 +112,7 @@ async function loadTransactions() {
         const response = await fetch('/api/load');
         const data = await response.json();
 
-        tableFoot.innerHTML = '';
+        tableBody.innerHTML = '';
         cumulativeAmount = 0;
         createChart();
 

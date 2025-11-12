@@ -2,7 +2,7 @@
 lucide.createIcons();
 
 offcanvasBottomAddTransaction = document.getElementById('offcanvasBottomAddTransaction');
-const tableBody = document.querySelector('#transactionTable tbody');
+const tableFoot = document.querySelector('#transactionTable tfoot');
 const totalAmountCell = document.getElementById('totalAmount');
 const groupBySelect = document.getElementById('groupBySelect');
 
@@ -71,7 +71,7 @@ function createChart() {
 
 function updateTotal() {
     let total = 0;
-    tableBody.querySelectorAll('tr').forEach(row => {
+    tableFoot.querySelectorAll('tr').forEach(row => {
         const amountCell = row.cells[1];
         const value = parseFloat(amountCell.textContent);
         total += value;
@@ -89,7 +89,7 @@ function addTransactionTableRow(index, id, amount, description, date) {
             <td>${date}</td>
         </tr>
     `;
-    tableBody.insertAdjacentHTML('beforeend', row);
+    tableFoot.insertAdjacentHTML('beforeend', row);
     updateTotal();
 }
 
@@ -112,7 +112,7 @@ async function loadTransactions() {
         const response = await fetch('/api/load');
         const data = await response.json();
 
-        tableBody.innerHTML = '';
+        tableFoot.innerHTML = '';
         cumulativeAmount = 0;
         createChart();
 

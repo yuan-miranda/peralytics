@@ -69,7 +69,7 @@
 
     <div class="mt-5 mb-5" style="max-width: 50rem; margin: auto; padding: 10px;">
         <div>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center justify-content-end">
                 <select class="form-select w-auto" id="groupBySelect" aria-label="Group By Select">
                     <option value="" selected>Default</option>
                     <option value="day">Daily</option>
@@ -85,7 +85,7 @@
                 <canvas id="chart"></canvas>
             </div>
 
-            <table class="table table-hover table-sm small mt-2" id="transactionTable">
+            <table class="table table-hover table-sm small mt-2" id="transactionTable" style="white-space: nowrap;">
                 <caption>Rip to my wallet</caption>
                 <thead class="table-dark">
                     <tr>
@@ -96,16 +96,17 @@
                     </tr>
                 </thead>
 
-                <tbody>
-                </tbody>
-
-                <tfoot class="table-dark">
+                <tbody class="table-secondary">
                     <tr>
                         <th scope="row">Total</th>
                         <td id="totalAmount">₱ 0.00</td>
                         <td></td>
                         <td></td>
                     </tr>
+                </tbody>
+
+                <tfoot>
+
                 </tfoot>
             </table>
         </div>

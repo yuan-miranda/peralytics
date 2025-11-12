@@ -12,3 +12,11 @@
     padding: 1rem;
 
 }
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table {
+  white-space: nowrap;
+}

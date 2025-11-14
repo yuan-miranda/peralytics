@@ -83,7 +83,7 @@ function createChart() {
                         pinch: {
                             enabled: true
                         },
-                        mode: 'x',
+                        mode: 'xy',
                     },
                     pan: {
                         enabled: true,

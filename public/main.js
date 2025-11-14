@@ -55,12 +55,15 @@ function createChart() {
                     label: 'Balance',
                     data: [],
                     backgroundColor: [],
-                    maxBarThickness: 30,
                 }
             ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            onResize: (chart, size) => {
+                if (chart && chart.canvas) chart.canvas.style.minHeight = '300px';
+            },
             plugins: {
                 tooltip: {
                     intersect: false,

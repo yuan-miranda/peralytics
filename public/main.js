@@ -61,7 +61,7 @@ function createChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            onResize: (chart, size) => {
+            onResize: (chart) => {
                 if (chart && chart.canvas) chart.canvas.style.minHeight = '300px';
             },
             plugins: {

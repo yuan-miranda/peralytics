@@ -7,7 +7,6 @@
     <title>Pera Analytics</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -68,9 +67,18 @@
 
 
     <div class="mt-5 mb-5" style="max-width: 50rem; margin: auto; padding: 10px;">
-        <div>
+        <div class="d-flex mb-3" style="justify-content: space-between;">
+            <!-- left -->
+            <div class="d-flex align-items-center justify-content-start">
+                <button class="btn" id="resetViewBtn" title="Reset View"
+                    style="height: calc(2.5rem + 1px); outline: 1px solid #DEE2E6;">
+                    Reset zoom
+                </button>
+            </div>
+            <!-- right -->
             <div class="d-flex align-items-center justify-content-end">
-                <select class="form-select w-auto" id="groupBySelect" aria-label="Group By Select">
+                <select class="form-select w-auto" id="groupBySelect" aria-label="Group By Select"
+                    style="height: calc(2.5rem + 2px);">
                     <option value="" selected>Default</option>
                     <option value="day">Daily</option>
                     <option value="week">Weekly</option>
@@ -112,7 +120,7 @@
         </div>
     </div>
 
-    <script src="main.js"></script>
+    <script src="main.js" type="module"></script>
 </body>
 
 </html>

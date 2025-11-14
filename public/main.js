@@ -1,9 +1,31 @@
 // public/main.js
-lucide.createIcons();
 
-offcanvasBottomAddTransaction = document.getElementById('offcanvasBottomAddTransaction');
+import {
+    Chart,
+    BarController,
+    BarElement,
+    LinearScale,
+    CategoryScale,
+    Tooltip,
+    Legend
+} from "https://cdn.jsdelivr.net/npm/chart.js@4.5.0/+esm";
+import zoomPlugin from 'https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/+esm';
+
+lucide.createIcons();
+Chart.register(
+    BarController,
+    BarElement,
+    LinearScale,
+    CategoryScale,
+    Tooltip,
+    Legend,
+    zoomPlugin
+);
+
+const offcanvasBottomAddTransaction = document.getElementById('offcanvasBottomAddTransaction');
 const tableBody = document.querySelector('#transactionTable tbody');
 const totalAmountCell = document.getElementById('totalAmount');
+const resetViewBtn = document.getElementById('resetViewBtn');
 const groupBySelect = document.getElementById('groupBySelect');
 
 const addTransactionBtn = document.getElementById('addTransactionBtn');
@@ -33,6 +55,7 @@ function createChart() {
                     label: 'Balance',
                     data: [],
                     backgroundColor: [],
+                    maxBarThickness: 30,
                 }
             ]
         },
@@ -49,6 +72,22 @@ function createChart() {
                         }
                     }
                 },
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                        },
+                        pinch: {
+                            enabled: true
+                        },
+                        mode: 'x',
+                    },
+                    pan: {
+                        enabled: true,
+                        mode: 'xy',
+                    },
+                }
+
             },
             scales: {
                 y: {
@@ -226,6 +265,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     groupBySelect.addEventListener('change', async () => {
         await loadTransactions();
+    });
+
+    resetViewBtn.addEventListener('click', () => {
+        chart.resetZoom();
     });
 
     addTransactionBtn.addEventListener('click', async (e) => {

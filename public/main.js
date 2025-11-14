@@ -66,7 +66,7 @@ function createChart() {
             },
             plugins: {
                 tooltip: {
-                    intersect: false,
+                    intersect: true,
                     callbacks: {
                         label: function (context) {
                             const [start, end] = context.raw;
